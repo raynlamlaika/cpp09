@@ -4,12 +4,12 @@
 #include <map>
 #include <iostream>
 #include <fstream>
-
+#include <stdlib.h>
 
 class BitcoinExchange
 {
     private:
-        std::map<std::string, double> exchangeRates;
+        std::map<std::string, double> Database;
 
     public:
         BitcoinExchange();
@@ -19,8 +19,7 @@ class BitcoinExchange
 
         void parseFile(const std::string &filename);
         void printResults() const;
-
-
+        void parceinput(const std::string &line);
 };
 
 #endif

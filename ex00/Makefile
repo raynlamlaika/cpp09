@@ -4,11 +4,11 @@ OBJS = $(SRCS:.cpp=.o)
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 RM = rm -f
-
+HEADERS = BitcoinExchange.hpp
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(HEADERS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 %.o: %.cpp
