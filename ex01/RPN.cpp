@@ -3,6 +3,7 @@
 
 RPN::RPN() {}
 RPN::~RPN() {}
+
 RPN& RPN::operator=(const RPN &other)
 {
     if (this != &other)
@@ -12,6 +13,9 @@ RPN& RPN::operator=(const RPN &other)
 
 RPN::RPN(const RPN &other) {*this= other;}
 
+
+
+// note: you should handel the nigative number and () check if it needed to be handeled
 
 void RPN::calculate(const std::string &expression)
 {
