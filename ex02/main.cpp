@@ -9,12 +9,13 @@ int main(int ac, char **av)
     // first is to add the clock fom the first to the end
     clock_t start = clock();
     PmergeMe pmergeMe;
-    pmergeMe.parseInput(ac, av);
+    try {pmergeMe.parseInput(ac, av);}
+    catch(const std::exception& e) {return 1;}
     pmergeMe.mergeInsertSort(pmergeMe.getVector());
     pmergeMe.printResults();
     clock_t end = clock();
     double elapsed = double(end - start) / CLOCKS_PER_SEC;
-std::cout << std::fixed << "Time taken: " << elapsed << " seconds" << std::endl;
+    std::cout << std::fixed << "Time taken: " << elapsed << " seconds" << std::endl;
 
     return 0;
 }

@@ -23,9 +23,10 @@ void PmergeMe::parseInput(int ac, char **av)
         std::istringstream iss(av[i]);
         if (!(iss >> num)) {
             std::cerr << "Error: invalid number\n";
+            throw std::invalid_argument("Negative number");
             return;
         }
-        if (num < 0) {std::cerr << "Error: negative number\n"; return;}
+        if (num < 0) {std::cerr << "Error: negative number\n"; throw std::invalid_argument("Negative number"); return ;}
         vec.push_back(num);
     }
 }
