@@ -6,7 +6,7 @@ PmergeMe::PmergeMe() {}
 PmergeMe::PmergeMe(const PmergeMe &other) : vec(other.vec), sortedVec(other.sortedVec) {}
 PmergeMe &PmergeMe::operator=(const PmergeMe &other)
 {
-    if (this != &other)  //  best practice even if i didn't allocat any memoory
+    if (this != &other)
     {
         vec = other.vec;
         sortedVec = other.sortedVec;
@@ -23,17 +23,19 @@ void PmergeMe::parseInput(int ac, char **av)
         std::istringstream iss(av[i]);
         if (!(iss >> num)) {
             std::cerr << "Error: invalid number\n";
-            throw std::invalid_argument("Negative number");
-            return;
+            throw std::invalid_argument("Invalid number");
         }
-        if (num < 0) {std::cerr << "Error: negative number\n"; throw std::invalid_argument("Negative number"); return ;}
+        if (num < 0) {
+            std::cerr << "Error: negative number\n";
+            throw std::invalid_argument("Negative number");
+        }
         vec.push_back(num);
     }
 }
 
 static void spliter(const std::vector<int> &vec, std::vector<int> &larger, std::vector<int> &smaller, int &unpaired)
 {
-    for (size_t i = 0 ;vec.size() > i ; i++)
+    for (size_t i = 0; i < vec.size(); i++)
     {
         if (i + 1 < vec.size())
         {
@@ -65,21 +67,17 @@ static void RealSorting(std::vector<int> &holders)
 
     spliter(holders, larger, smaller, unpaired);
 
-    // recursive step
+    // recursive step: only sort the larger chain
     RealSorting(larger);
 
-    // main chain
     std::vector<int> result = larger;
 
-    // insert first element
+    // insert smaller elements using binary search
     result.insert(result.begin(), smaller[0]);
-
-    // binary search
     for (size_t i = 1; i < smaller.size(); i++)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[i]);
-
         result.insert(pos, smaller[i]);
     }
 
@@ -87,22 +85,26 @@ static void RealSorting(std::vector<int> &holders)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
-
         result.insert(pos, unpaired);
     }
 
     holders = result;
 }
 
+static int jacopstal(int n)
+{
+    if (n == 0)
+        return 0;
+    if (n == 1)
+        return 1;
+    return jacopstal(n - 1) + 2 * jacopstal(n - 2);
+}
 
 void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
 {
-
-    // start of the merge insert sort algorithm
-    // base  checks
     if (vec.size() <= 1)
-        return ;
-    // first the split of the vector into pairs and the split of the larger and smaller elements into two vectors itn stor unpaired element if the size of the vector is odd
+        return;
+
     std::vector<int> larger, smaller;
     int unpaired = -1;
     size_t n = vec.size();
@@ -110,58 +112,38 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
         unpaired = vec[n - 1];
 
     spliter(vec, larger, smaller, unpaired);
-    // if (unpaired != -1)
-    //     larger.insert(larger.end() , unpaired);
 
-
-
-    // // next stage is to sort the larger vector using merge sort
-    RealSorting(smaller);
+    // sort only the larger chain recursively
     RealSorting(larger);
-    // // next stage is to insert the smaller elements into the larger vector using binary search
-    // // sortedVec = larger;
 
-
-    std::cout << "-------------------------------: ";
-    for (size_t i = 0; i < larger.size(); i++)
-        std::cout << larger[i] << " ";
-    std::cout << "\n++++++++++++++++++++++++++++: ";
-    for (size_t i = 0; i < smaller.size(); i++)
-        std::cout << smaller[i] << " ";
-    std::cout << "\n";
-
-
-    // the first is guaranteed to be smaller then the first element in larger vector
-    // sortedVec.insert(sortedVec.begin(), smaller[0]);
-    // for (size_t i = 1; i < smaller.size(); i++)
-    // {
-    //     int pos = binarySearchVector(sortedVec, smaller[i], sortedVec.size());
-    //     sortedVec.insert(sortedVec.begin() + pos, smaller[i]);
-    // }
-
-
-
-    // here change the implemmentation to jacopstal
-    std::vector<int> result = larger;
-
-    // insert first smaller
-    result.insert(result.begin(), smaller[0]);
-
-    // insert remaining smaller elements
-    for (size_t i = 1; i < smaller.size(); i++)
+    // Jacobsthal controls insertion ORDER to minimise comparisons.
+    // Actual insertion POSITION is always via lower_bound (binary search).
+    // shity -------------------------------------------- part
+    std::vector<int> insertOrder;
+    int prev = 0;
+    for (int k = 2; ; k++)
     {
-        std::vector<int>::iterator pos =
-            std::lower_bound(result.begin(), result.end(), smaller[i]);
-
-        result.insert(pos, smaller[i]);
+        int jac = jacopstal(k);
+        int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
+        for (int idx = end; idx >= prev; idx--)
+            insertOrder.push_back(idx);
+        prev = jac;
+        if (prev >= (int)smaller.size())
+            break;
     }
 
-    // insert unpaired element
+    std::vector<int> result = larger;
+    for (size_t i = 0; i < insertOrder.size(); i++)
+    {
+        std::vector<int>::iterator pos =
+            std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
+        result.insert(pos, smaller[insertOrder[i]]);
+    }
+
     if (unpaired != -1)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
-
         result.insert(pos, unpaired);
     }
 
@@ -178,6 +160,5 @@ void PmergeMe::printResults() const
         std::cout << sortedVec[i] << " ";
     std::cout << "\n";
 }
-
 
 std::vector<int> PmergeMe::getVector() const { return vec; }
