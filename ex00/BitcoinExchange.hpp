@@ -19,7 +19,7 @@ class BitcoinExchange
 
         void parseFile(const std::string &filename);
         void printResults() const;
-        void parceinput(const std::string &line);
+        bool parceinput(const std::string &line, int i);
 };
 
 #endif

@@ -8,7 +8,7 @@ HEADERS = BitcoinExchange.hpp
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(HEADERS)
+$(NAME): $(OBJS) 
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 %.o: %.cpp
