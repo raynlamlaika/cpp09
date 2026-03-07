@@ -54,7 +54,14 @@ void RPN::calculate(const std::string &expression)
             else if (c == '*')
                 numbers.push(a * b);
             else if (c == '/')
+            {
+                if (b == 0 )
+                {
+                    std::cerr << "Error: division by zero\n";
+                    return ;
+                }
                 numbers.push(a / b);
+            }
         }
     }
     std::cout << numbers.top() << "\n";

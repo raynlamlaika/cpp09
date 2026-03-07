@@ -54,6 +54,8 @@ void BitcoinExchange::parceinput(const std::string &line)
     std::cout << date << " => " << value << " = " << value * it->second << "\n";
     return;
 }
+
+
 std::map<std::string, double> DatabaseLoader()
 {
     std::map<std::string, double> Database;
