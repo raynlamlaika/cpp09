@@ -122,7 +122,7 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
 
 
     // add the deque 
-    std::vector<int> insertOrder;
+    // std::vector<int> insertOrder;
     std::deque <int> insertingOrder;
     int prev = 0;
 
@@ -130,8 +130,8 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
     {
         int jac = jacopstal(k);
         int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
-        for (int idx = end; idx >= prev; idx--)
-            insertOrder.push_back(idx);
+        // for (int idx = end; idx >= prev; idx--)
+        //     insertOrder.push_back(idx);
         for (int idx = end; idx >= prev; idx--)
             insertingOrder.push_back(idx);
         prev = jac;
@@ -140,11 +140,11 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
     }
 
     std::vector<int> result = larger;
-    for (size_t i = 0; i < insertOrder.size(); i++)
+    for (size_t i = 0; i < insertingOrder.size(); i++)
     {
         std::vector<int>::iterator pos =
-            std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
-        result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
+            std::lower_bound(result.begin(), result.end(), smaller[insertingOrder[i]]);
+        result.insert(pos, smaller[insertingOrder[i]]); // binary search insertion
     }
     if (unpaired != -1)
     {
