@@ -119,14 +119,21 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
     // Jacobsthal controls insertion ORDER to minimise comparisons.
     // Actual insertion POSITION is always via lower_bound (binary search).
     // shity -------------------------------------------- part
+
+
+    // add the deque 
     std::vector<int> insertOrder;
+    std::deque <int> insertingOrder;
     int prev = 0;
-    for (int k = 2; ; k++)
+
+    for (int k = 2; ; k++) // start in infinit loop
     {
         int jac = jacopstal(k);
         int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
         for (int idx = end; idx >= prev; idx--)
             insertOrder.push_back(idx);
+        for (int idx = end; idx >= prev; idx--)
+            insertingOrder.push_back(idx);
         prev = jac;
         if (prev >= (int)smaller.size())
             break;
@@ -137,16 +144,14 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
-        result.insert(pos, smaller[insertOrder[i]]);
+        result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
     }
-
     if (unpaired != -1)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
         result.insert(pos, unpaired);
     }
-
     sortedVec = result;
 }
 
