@@ -3,19 +3,22 @@
 
 
 PmergeMe::PmergeMe() {}
-PmergeMe::PmergeMe(const PmergeMe &other) : vec(other.vec), sortedVec(other.sortedVec) {}
+PmergeMe::PmergeMe(const PmergeMe &other) : vec(other.vec),  sortedVec(other.sortedVec),deqsort(other.deqsort), sortedDeq(other.sortedDeq) {} // check why the order is matters
 PmergeMe &PmergeMe::operator=(const PmergeMe &other)
 {
     if (this != &other)
     {
         vec = other.vec;
+        deqsort = other.deqsort;
         sortedVec = other.sortedVec;
+        sortedDeq = other.sortedDeq;
     }
     return *this;
 }
+
 PmergeMe::~PmergeMe() {}
 
-void PmergeMe::parseInput(int ac, char **av)
+void PmergeMe::parseInputVec(int ac, char **av)
 {
     for (int i = 1; i < ac; i++)
     {
@@ -99,8 +102,7 @@ static int jacopstal(int n)
         return 1;
     return jacopstal(n - 1) + 2 * jacopstal(n - 2);
 }
-
-void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
+void PmergeMe::sortVector(const std::vector<int> &vec)
 {
     if (vec.size() <= 1)
         return;
@@ -122,8 +124,8 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
 
 
     // add the deque 
-    // std::vector<int> insertOrder;
-    std::deque <int> insertingOrder;
+    std::vector<int> insertOrder;
+    // std::deque <int> insertingOrder;
     int prev = 0;
 
     for (int k = 2; ; k++) // start in infinit loop
@@ -133,18 +135,18 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
         // for (int idx = end; idx >= prev; idx--)
         //     insertOrder.push_back(idx);
         for (int idx = end; idx >= prev; idx--)
-            insertingOrder.push_back(idx);
+            insertOrder.push_back(idx);
         prev = jac;
         if (prev >= (int)smaller.size())
             break;
     }
 
     std::vector<int> result = larger;
-    for (size_t i = 0; i < insertingOrder.size(); i++)
+    for (size_t i = 0; i < insertOrder.size(); i++)
     {
         std::vector<int>::iterator pos =
-            std::lower_bound(result.begin(), result.end(), smaller[insertingOrder[i]]);
-        result.insert(pos, smaller[insertingOrder[i]]); // binary search insertion
+            std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
+        result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
     }
     if (unpaired != -1)
     {
@@ -155,15 +157,31 @@ void PmergeMe::mergeInsertSort(const std::vector<int> &vec)
     sortedVec = result;
 }
 
-void PmergeMe::printResults() const
+
+void PmergeMe::printResults(int i) const
 {
-    std::cout << "Before: ";
-    for (size_t i = 0; i < vec.size(); i++)
-        std::cout << vec[i] << " ";
-    std::cout << "\nAfter: ";
-    for (size_t i = 0; i < sortedVec.size(); i++)
-        std::cout << sortedVec[i] << " ";
-    std::cout << "\n";
+    if (i == 0)
+    {
+        std::cout << "Before: ";
+        for (size_t i = 0; i < vec.size(); i++)
+            std::cout << vec[i] << " ";
+        std::cout << "\nAfter: ";
+        for (size_t i = 0; i < sortedVec.size(); i++)
+            std::cout << sortedVec[i] << " ";
+        std::cout << "\n";
+    }
+    if (i == 1)
+    {
+        std::cout << "Before: ";
+        for (size_t i = 0; i < deqsort.size(); i++)
+            std::cout << deqsort[i] << " ";
+        std::cout << "\nAfter: ";
+        for (size_t i = 0; i < sortedDeq.size(); i++)
+            std::cout << sortedDeq[i] << " ";
+        std::cout << "\n";
+    }
 }
 
 std::vector<int> PmergeMe::getVector() const { return vec; }
+
+std::deque<int> PmergeMe::getDeque() const { return sortedDeq; }

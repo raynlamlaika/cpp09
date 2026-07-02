@@ -13,12 +13,10 @@ RPN& RPN::operator=(const RPN &other)
 
 RPN::RPN(const RPN &other) {*this= other;}
 
-
-
-// note: you should handel the nigative number and () check if it needed to be handeled
-
 void RPN::calculate(const std::string &expression)
 {
+    int operators = 0;
+    int tokens = 0;
     for(size_t i = 0; i < expression.length(); i++)
     {
         char c = expression[i];
@@ -31,12 +29,14 @@ void RPN::calculate(const std::string &expression)
             continue;
         if (c >= '0' && c <= '9')
         {
+            tokens++;
             this->tokens++;
             numbers.push(c - '0');
             continue;
         }
         if (c == '+' || c == '-' || c == '*' || c == '/')
         {
+            operators++;
             this->operators++;
             if (numbers.size() < 2)
             {
@@ -64,12 +64,12 @@ void RPN::calculate(const std::string &expression)
             }
         }
     }
+    if (operators != tokens - 1)
+    {
+        std::cerr << "Error: invalid expression\n";
+        return ;
+    }
     std::cout << numbers.top() << "\n";
     
 }
-
-
-
-
-
 

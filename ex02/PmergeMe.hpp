@@ -13,6 +13,8 @@ class PmergeMe
     private:
         std::vector<int> vec;
         std::vector<int> sortedVec;
+        std::deque<int> deqsort;
+        std::deque<int> sortedDeq;
 
     public:
         PmergeMe();
@@ -20,11 +22,14 @@ class PmergeMe
         PmergeMe &operator=(const PmergeMe &other);
         ~PmergeMe();
 
-        void parseInput(int ac, char **av);
-        void printResults() const;
-        void mergeInsertSort(const std::vector<int> &vec);
+        void parseInputVec(int ac, char **av);
+        void parseInputDQ(int ac, char **av);
+        void printResults(int i) const;
+        // void mergeInsertSort(const std::vector<int> &vec);
+        void sortVector(const std::vector<int> &vec);
+        void sortDeque(const std::deque<int> &deq);
         std::vector<int> getVector() const;
+        std::deque<int> getDeque() const;
 };
-
 
 #endif

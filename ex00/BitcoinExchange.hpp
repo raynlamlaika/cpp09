@@ -6,6 +6,8 @@
 #include <fstream>
 #include <stdlib.h>
 
+# define DATA_FILE "data.csv"
+
 class BitcoinExchange
 {
     private:
@@ -23,3 +25,4 @@ class BitcoinExchange
 };
 
 #endif
+
