@@ -86,178 +86,59 @@ int jacobsthal(int k)
     return jacobsthal(k - 1) + 2 * jacobsthal(k - 2);
 }
 
-// void PmergeMe::sortDeque(const std::deque<int> &deq)
-// {
-//     if (deq.size() <= 1)
-//         return;
-
-//     std::deque<int> larger, smaller;
-//     int unpaired = -1;
-//     size_t n = deq.size();
-//     if (n % 2 == 1)
-//         unpaired = deq[n - 1];
-
-//     spliter(deq, larger, smaller, unpaired);
-
-//     // sort only the larger chain recursively
-//     RealSorting(larger);
-
-//     // Jacobsthal controls insertion ORDER to minimise comparisons.
-//     // Actual insertion POSITION is always via lower_bound (binary search).
-//     // shity -------------------------------------------- part
-
-
-//     // add the deque 
-//     std::deque<int> insertOrder;
-//     // std::deque <int> insertingOrder;
-//     int prev = 0;
-
-//     for (int k = 2; ; k++) // start in infinit loop
-//     {
-//         int jac = jacobsthal(k);
-//         int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
-//         // for (int idx = end; idx >= prev; idx--)
-//         //     insertOrder.push_back(idx);
-//         for (int idx = end; idx >= prev; idx--)
-//             insertOrder.push_back(idx);
-//         prev = jac;
-//         if (prev >= (int)smaller.size())
-//             break;
-//     }
-
-//     std::deque<int> result = larger;
-//     for (size_t i = 0; i < insertOrder.size(); i++)
-//     {
-//         std::deque<int>::iterator pos =
-//             std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
-//         result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
-//     }
-//     if (unpaired != -1)
-//     {
-//         std::deque<int>::iterator pos =
-//             std::lower_bound(result.begin(), result.end(), unpaired);
-//         result.insert(pos, unpaired);
-//     }
-//     sortedDeq = result;
-
-
-// }
-
-
-struct Pair
+void PmergeMe::sortDeque(const std::deque<int> &deq)
 {
-    int small;
-    int large;
-};
-
-
-void PmergeMe::sortDeque(const std::deque<int>& deq)
-{
-    if (deq.empty())
+    if (deq.size() <= 1)
         return;
 
-    if (deq.size() == 1)
-    {
-        sortedDeq = deq;
-        return;
-    }
+    std::deque<int> larger, smaller;
+    int unpaired = -1;
+    size_t n = deq.size();
+    if (n % 2 == 1)
+        unpaired = deq[n - 1];
 
-    std::deque<Pair> pairs;
-    int unpaired = 0;
-    bool hasUnpaired = false;
+    spliter(deq, larger, smaller, unpaired);
 
-    // ---------------- Pairing phase ----------------
+    // sort only the larger chain recursively
+    RealSorting(larger);
 
-    for (size_t i = 0; i + 1 < deq.size(); i += 2)
-    {
-        Pair p;
+    // Jacobsthal controls insertion ORDER to minimise comparisons.
+    // Actual insertion POSITION is always via lower_bound (binary search).
+    // shity -------------------------------------------- part
 
-        if (deq[i] < deq[i + 1])
-        {
-            p.small = deq[i];
-            p.large = deq[i + 1];
-        }
-        else
-        {
-            p.small = deq[i + 1];
-            p.large = deq[i];
-        }
 
-        pairs.push_back(p);
-    }
-
-    if (deq.size() % 2)
-    {
-        hasUnpaired = true;
-        unpaired = deq.back();
-    }
-
-    // ----------- Build main chain from larger values -----------
-
-    std::deque<int> mainChain;
-
-    for (size_t i = 0; i < pairs.size(); i++)
-        mainChain.push_back(pairs[i].large);
-
-    RealSorting(mainChain);
-
-    // -------- Jacobsthal insertion order --------
-
+    // add the deque 
     std::deque<int> insertOrder;
-
+    // std::deque <int> insertingOrder;
     int prev = 0;
 
-    for (int k = 2;; k++)
+    for (int k = 2; ; k++) // start in infinit loop
     {
         int jac = jacobsthal(k);
-
-        int end =
-            (jac < (int)pairs.size())
-                ? jac - 1
-                : (int)pairs.size() - 1;
-
+        int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
+        // for (int idx = end; idx >= prev; idx--)
+        //     insertOrder.push_back(idx);
         for (int idx = end; idx >= prev; idx--)
             insertOrder.push_back(idx);
-
         prev = jac;
-
-        if (prev >= (int)pairs.size())
+        if (prev >= (int)smaller.size())
             break;
     }
 
-    // -------- Actual Ford-Johnson insertion --------
-
+    std::deque<int> result = larger;
     for (size_t i = 0; i < insertOrder.size(); i++)
     {
-        Pair& current = pairs[insertOrder[i]];
-
-        std::deque<int>::iterator partnerPos =
-            std::find(
-                mainChain.begin(),
-                mainChain.end(),
-                current.large);
-
-        std::deque<int>::iterator insertPos =
-            std::lower_bound(
-                mainChain.begin(),
-                partnerPos,
-                current.small);
-
-        mainChain.insert(insertPos, current.small);
+        std::deque<int>::iterator pos =
+            std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
+        result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
     }
-
-    // ---------- insert odd element ----------
-
-    if (hasUnpaired)
+    if (unpaired != -1)
     {
         std::deque<int>::iterator pos =
-            std::lower_bound(
-                mainChain.begin(),
-                mainChain.end(),
-                unpaired);
-
-        mainChain.insert(pos, unpaired);
+            std::lower_bound(result.begin(), result.end(), unpaired);
+        result.insert(pos, unpaired);
     }
+    sortedDeq = result;
 
-    sortedDeq = mainChain;
+
 }
