@@ -1,7 +1,7 @@
 #include "PmergeMe.hpp"
 
-
-
+// int total;
+int total;
 PmergeMe::PmergeMe() {}
 PmergeMe::PmergeMe(const PmergeMe &other) : vec(other.vec),  sortedVec(other.sortedVec),deqsort(other.deqsort), sortedDeq(other.sortedDeq) {} // check why the order is matters
 PmergeMe &PmergeMe::operator=(const PmergeMe &other)
@@ -27,7 +27,6 @@ static int jacobsthal(int n)
     return jacobsthal(n - 1) + 2 * jacobsthal(n - 2);
 }
 
-
 void PmergeMe::parseInputDQ(int ac, char **av)
 {
     for (int i = 1; i < ac; i++)
@@ -52,6 +51,7 @@ static void spliterDq(const std::deque<int> &deqsort, std::deque<int> &larger, s
     {
         if (i + 1 < deqsort.size())
         {
+
             if (deqsort[i] > deqsort[i + 1])
             {
                 larger.push_back(deqsort[i]);
@@ -62,6 +62,7 @@ static void spliterDq(const std::deque<int> &deqsort, std::deque<int> &larger, s
                 larger.push_back(deqsort[i + 1]);
                 smaller.push_back(deqsort[i]);
             }
+            total++;
             i++;
         }
         else
@@ -91,6 +92,7 @@ static void RealSortingDq(std::deque<int> &holders)
     {
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[i]);
+        total++;
         result.insert(pos, smaller[i]);
     }
 
@@ -98,6 +100,7 @@ static void RealSortingDq(std::deque<int> &holders)
     {
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
+        total++;
         result.insert(pos, unpaired);
     }
 
@@ -107,7 +110,7 @@ static void RealSortingDq(std::deque<int> &holders)
 void PmergeMe::sortDeque(const std::deque<int> &deq)
 {
     if (deq.size() <= 1)
-        return;
+        {std::cout << "Already sorted or empty deque.\n"; return;}
 
     std::deque<int> larger, smaller;
     int unpaired = -1;
@@ -148,10 +151,12 @@ void PmergeMe::sortDeque(const std::deque<int> &deq)
     {
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
+        total++;
         result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
     }
     if (unpaired != -1)
     {
+        total++;
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
         result.insert(pos, unpaired);
@@ -197,6 +202,7 @@ static void spliter(const std::vector<int> &vec, std::vector<int> &larger, std::
                 smaller.push_back(vec[i]);
             }
             i++;
+            total++;
         }
         else
             unpaired = vec[i];
@@ -225,6 +231,7 @@ static void RealSorting(std::vector<int> &holders)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[i]);
+        total++;
         result.insert(pos, smaller[i]);
     }
 
@@ -232,6 +239,7 @@ static void RealSorting(std::vector<int> &holders)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
+        total++;
         result.insert(pos, unpaired);
     }
 
@@ -276,6 +284,7 @@ void PmergeMe::sortVector(const std::vector<int> &vec)
         prev = jac;
         if (prev >= (int)smaller.size())
             break;
+
     }
 
     std::vector<int> result = larger;
@@ -283,12 +292,14 @@ void PmergeMe::sortVector(const std::vector<int> &vec)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
+        total++;
         result.insert(pos, smaller[insertOrder[i]]); // binary search insertion
     }
     if (unpaired != -1)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
+        total++;
         result.insert(pos, unpaired);
     }
     sortedVec = result;
@@ -321,4 +332,4 @@ void PmergeMe::printResults(int i) const
 
 std::vector<int> PmergeMe::getVector() const { return vec; }
 
-std::deque<int> PmergeMe::getDeque() const { return sortedDeq; }
+std::deque<int> PmergeMe::getDeque() const { return deqsort; }

@@ -8,6 +8,8 @@
 #include <iterator>
 #include <deque>
 
+// extern int total;
+
 class PmergeMe
 {
     private:
