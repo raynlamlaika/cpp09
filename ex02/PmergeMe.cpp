@@ -1,7 +1,6 @@
 #include "PmergeMe.hpp"
 
-// int total;
-int total;
+
 PmergeMe::PmergeMe() {}
 PmergeMe::PmergeMe(const PmergeMe &other) : vec(other.vec),  sortedVec(other.sortedVec),deqsort(other.deqsort), sortedDeq(other.sortedDeq) {} // check why the order is matters
 PmergeMe &PmergeMe::operator=(const PmergeMe &other)
@@ -63,7 +62,6 @@ static void spliterDq(const std::deque<int> &deqsort, std::deque<int> &larger, s
                 larger.push_back(deqsort[i + 1]);
                 smaller.push_back(deqsort[i]);
             }
-            total++;
             i++;
         }
         else
@@ -79,13 +77,8 @@ static void RealSortingDq(std::deque<int> &holders)
     std::deque<int> larger;
     std::deque<int> smaller;
     int unpaired = -1;
-    size_t n = holders.size();
-    if (n % 2 == 1)
-        unpaired = holders[n - 1];
 
     spliterDq(holders, larger, smaller, unpaired);
-
-    // sort only the larger chain recursively
     RealSortingDq(larger);
 
     std::deque<int> result = larger;
@@ -93,18 +86,14 @@ static void RealSortingDq(std::deque<int> &holders)
     {
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[i]);
-        total++;
         result.insert(pos, smaller[i]);
     }
-
     if (unpaired != -1)
     {
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
-        total++;
         result.insert(pos, unpaired);
     }
-
     holders = result;
 }
 
@@ -120,7 +109,6 @@ void PmergeMe::sortDeque(const std::deque<int> &deq)
         unpaired = deq[n - 1];
 
     spliterDq(deq, larger, smaller, unpaired);
-
     RealSortingDq(larger);
 
     std::deque<int> insertOrder;
@@ -129,36 +117,30 @@ void PmergeMe::sortDeque(const std::deque<int> &deq)
 
     for (int k = 2; ; k++) // start in infinit loop
     {
-        int jac = jacobsthal(k);
-        int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
+        int jac = jacobsthal(k);int end = jac - 1;
+        if (end >= static_cast<int>(smaller.size()))
+            end = static_cast<int>(smaller.size()) - 1;
 
         for (int idx = end; idx >= prev; idx--)
             insertOrder.push_back(idx);
         prev = jac;
-        if (prev >= (int)smaller.size())
-            break;
+        if (prev >= (int)smaller.size())break;
     }
-
     std::deque<int> result = larger;
     for (size_t i = 0; i < insertOrder.size(); i++)
     {
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[insertOrder[i]]);
-        total++;
         result.insert(pos, smaller[insertOrder[i]]);
     }
     if (unpaired != -1)
     {
-        total++;
         std::deque<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
         result.insert(pos, unpaired);
     }
     sortedDeq = result;
-
-
 }
-
 
 void PmergeMe::parseInputVec(int ac, char **av)
 {
@@ -205,15 +187,11 @@ static void RealSorting(std::vector<int> &holders)
 {
     if (holders.size() <= 1)
         return;
-
     std::vector<int> larger;
     std::vector<int> smaller;
     int unpaired = -1;
-
     spliter(holders, larger, smaller, unpaired);
-
     RealSorting(larger);
-
     std::vector<int> result = larger;
 
     result.insert(result.begin(), smaller[0]);
@@ -221,46 +199,35 @@ static void RealSorting(std::vector<int> &holders)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), smaller[i]);
-        total++;
         result.insert(pos, smaller[i]);
     }
-
     if (unpaired != -1)
     {
         std::vector<int>::iterator pos =
             std::lower_bound(result.begin(), result.end(), unpaired);
-        total++;
         result.insert(pos, unpaired);
     }
-
     holders = result;
 }
 
-
 void PmergeMe::sortVector(const std::vector<int> &vec)
 {
-    if (vec.size() <= 1)
-        return;
+    if (vec.size() <= 1)return;
 
     std::vector<int> larger, smaller;
     int unpaired = -1;
-    size_t n = vec.size();
-    if (n % 2 == 1)
-        unpaired = vec[n - 1];
 
     spliter(vec, larger, smaller, unpaired);
-
     RealSorting(larger);
-
     std::vector<int> insertOrder;
 
-
     int prev = 0;
-
-    for (int k = 2; ; k++) // start in infinit loop
+    for (int k = 2; ; k++)
     {
         int jac = jacobsthal(k);
-        int end = (jac < (int)smaller.size()) ? jac - 1 : (int)smaller.size() - 1;
+        int end = jac - 1;
+        if (end >= static_cast<int>(smaller.size()))
+            end = static_cast<int>(smaller.size()) - 1;
 
         for (int idx = end; idx >= prev; idx--)
             insertOrder.push_back(idx);
@@ -285,7 +252,6 @@ void PmergeMe::sortVector(const std::vector<int> &vec)
     }
     sortedVec = result;
 }
-
 
 void PmergeMe::printResults(int i) const
 {
@@ -312,5 +278,4 @@ void PmergeMe::printResults(int i) const
 }
 
 std::vector<int> PmergeMe::getVector() const { return vec; }
-
 std::deque<int> PmergeMe::getDeque() const { return deqsort; }
