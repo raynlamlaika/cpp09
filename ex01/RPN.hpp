@@ -9,7 +9,7 @@ class RPN
 private:
     int operators;
     int tokens;
-    std::stack<int> numbers;
+    std::stack<double> numbers;
 public:
     RPN();
     ~RPN();

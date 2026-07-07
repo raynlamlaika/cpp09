@@ -10,13 +10,40 @@ BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) {
 }
 BitcoinExchange::~BitcoinExchange() {}
 
+bool isLeapYear(int year)
+{
+    return (year % 400 == 0) ||
+           (year % 4 == 0 && year % 100 != 0);
+}
+
+bool isValidDate(int year, int month, int day)
+{
+    if (year < 1)
+        return false;
+
+    if (month < 1 || month > 12)
+        return false;
+
+    int daysInMonth[] =
+    {
+        31,28,31,30,31,30,
+        31,31,30,31,30,31
+    };
+
+    if (isLeapYear(year))
+        daysInMonth[1] = 29;
+
+    return day >= 1 && day <= daysInMonth[month - 1];
+}
 
 bool BitcoinExchange::parceinput(const std::string &line, int i)
 {
     std::string date;
     double value;
-    // first split the line by |
+
     size_t pos = line.find('|');
+
+
     if (pos == std::string::npos) {std::cout << "Error: invalid format\n"; return false;}
     date = line.substr(0, pos);
     if (i == 0 && date != "date") 
@@ -34,13 +61,17 @@ bool BitcoinExchange::parceinput(const std::string &line, int i)
     if (date.empty()) {std::cout << "Error: empty date\n"; return false;}
     // check if the date is in the format YYYY-MM-DD
     if (date.size() != 10 || date[4] != '-' || date[7] != '-') {std::cout<< "Error: invalid date format\n"; return false;}
+    
+    
+    
     // check range of year, month and day
     int year = std::atoi(date.substr(0, 4).c_str());
     int month = std::atoi(date.substr(5, 2).c_str());
     int day = std::atoi(date.substr(8, 2).c_str());
     if (year < 2009 || year > 2024) {std::cout << "Error: year out of range\n"; return false;}
     if (month < 1 || month > 12) {std::cout << "Error: month out of range\n";       return false;}  
-    if (day < 1 || day > 31) {std::cout << "Error: day out of range\n"; return false;}
+    // if (day < 1 || day > 31) {std::cout << "Error: day out of range\n"; return false;} // handle days in month and leap years if needed
+    if (!isValidDate(year, month, day)) {std::cout << "Error: invalid date\n"; return false;}
 
     std::string valueStr = line.substr(pos + 1);
     valueStr.erase(0, valueStr.find_first_not_of(" \t"));
@@ -80,22 +111,23 @@ std::map<std::string, double> DatabaseLoader()
         while (std::getline(inFile, line))
         {
             size_t pos = line.find(',');
-            if (pos == std::string::npos) {std::cerr << "Error: invalid format in data.csv\n"; continue;}
+            if (pos == std::string::npos) {std::cerr << "Error: invalid format in " << DATA_FILE << "\n"; continue;}
             std::string date = line.substr(0, pos);
             double value = std::strtod(line.substr(pos + 1).c_str(), NULL);
             Database[date] = value;
         }
     }
-    else {std::cerr << "Error: can't open data.csv\n";}
+    else {std::cerr << "Error: can't open :" << DATA_FILE << "\n";}
     return Database;
 }
 
 void BitcoinExchange::parseFile(const std::string &filename)
 {
-    this->Database = DatabaseLoader();
     std::ifstream inFile(filename.c_str());
     if (inFile.is_open())
     {
+        this->Database = DatabaseLoader();
+        if (this->Database.empty()) {std::cerr << "Error: empty database\n"; return;}
         std::string line;
         int i = 0;
         while (std::getline(inFile, line))
