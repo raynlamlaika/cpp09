@@ -115,7 +115,7 @@ void PmergeMe::sortDeque(const std::deque<int> &deq)
 
     int prev = 0;
 
-    for (int k = 2; ; k++) // start in infinit loop
+    for (int k = 2; ; k++)
     {
         int jac = jacobsthal(k);int end = jac - 1;
         if (end >= static_cast<int>(smaller.size()))
@@ -235,6 +235,13 @@ void PmergeMe::sortVector(const std::vector<int> &vec)
         if (prev >= (int)smaller.size())
             break;
     }
+    
+    std::cout << "Insert order: ";
+    for (size_t i = 0; i < insertOrder.size(); i++)
+    {
+        std::cout << insertOrder[i] << " ";
+    }
+    std::cout << "\n";
 
     std::vector<int> result = larger;
     for (size_t i = 0; i < insertOrder.size(); i++)

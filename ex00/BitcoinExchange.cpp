@@ -68,7 +68,7 @@ bool BitcoinExchange::parceinput(const std::string &line, int i)
     int year = std::atoi(date.substr(0, 4).c_str());
     int month = std::atoi(date.substr(5, 2).c_str());
     int day = std::atoi(date.substr(8, 2).c_str());
-    if (year < 2009 || year > 2024) {std::cout << "Error: year out of range\n"; return false;}
+    // if (year < 2009 ) {std::cout << "Error: year out of range\n"; return false;}
     if (month < 1 || month > 12) {std::cout << "Error: month out of range\n";       return false;}  
     // if (day < 1 || day > 31) {std::cout << "Error: day out of range\n"; return false;} // handle days in month and leap years if needed
     if (!isValidDate(year, month, day)) {std::cout << "Error: invalid date\n"; return false;}
@@ -94,8 +94,11 @@ bool BitcoinExchange::parceinput(const std::string &line, int i)
         return false;
     }
     std::map<std::string, double>::iterator it = Database.lower_bound(date);
-    if (it == Database.end()) {std::cout << "Error: date not found\n"; return false;}
+    // if (it == Database.end()) {std::cout << "Error: date not found\n"; return false;}
+    if (it == Database.end()) {--it;std::cout << date << " => " << value << " = " << value * it->second << "\n"; return true;}
     if (it->first != date && it != Database.begin()) {it--;} // if the date is not found, we use the closest previous date
+    if (it->first != date && it == Database.begin())
+        std::cout << "Error: out of range\n"; return false;
     std::cout << date << " => " << value << " = " << value * it->second << "\n";
     return true;
 }
@@ -108,12 +111,14 @@ std::map<std::string, double> DatabaseLoader()
     if (inFile.is_open())
     {
         std::string line;
+        getline(inFile, line);
         while (std::getline(inFile, line))
         {
             size_t pos = line.find(',');
             if (pos == std::string::npos) {std::cerr << "Error: invalid format in " << DATA_FILE << "\n"; continue;}
             std::string date = line.substr(0, pos);
             double value = std::strtod(line.substr(pos + 1).c_str(), NULL);
+
             Database[date] = value;
         }
     }

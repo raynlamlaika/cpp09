@@ -1,9 +1,5 @@
 #include "PmergeMe.hpp"
-
-
-
 #include <iomanip>
-
 #include <cmath>
 
 int main(int ac, char **av)
